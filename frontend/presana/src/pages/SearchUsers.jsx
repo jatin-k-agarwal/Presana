@@ -25,7 +25,7 @@ export default function SearchUsers() {
     try {
       const token = localStorage.getItem("token");
       const response = await axios.get(
-        `http://localhost:5000/api/auth/search?query=${encodeURIComponent(searchQuery)}`,
+        `https://presana-backend.onrender.com/api/auth/search?query=${encodeURIComponent(searchQuery)}`,
         {
           headers: { Authorization: `Bearer ${token}` },
         }

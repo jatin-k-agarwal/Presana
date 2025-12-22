@@ -25,7 +25,7 @@ export default function HistoryPage() {
   const fetchHistory = async () => {
     try {
       const token = localStorage.getItem("token");
-      const response = await axios.get("http://localhost:5000/api/transfers/history", {
+      const response = await axios.get("https://presana-backend.onrender.com/api/transfers/history", {
         headers: { Authorization: `Bearer ${token}` },
       });
       setHistory(response.data);
@@ -39,7 +39,7 @@ export default function HistoryPage() {
   const fetchStats = async () => {
     try {
       const token = localStorage.getItem("token");
-      const response = await axios.get("http://localhost:5000/api/transfers/stats", {
+      const response = await axios.get("https://presana-backend.onrender.com/api/transfers/stats", {
         headers: { Authorization: `Bearer ${token}` },
       });
       setStats(response.data);

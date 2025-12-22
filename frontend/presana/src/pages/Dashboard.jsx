@@ -57,7 +57,7 @@ export default function Dashboard() {
 
   // Socket.IO connection
   useEffect(() => {
-    const newSocket = io("http://localhost:5000");
+    const newSocket = io("https://presana-backend.onrender.com");
     setSocket(newSocket);
 
     // Join with user ID
@@ -88,7 +88,7 @@ export default function Dashboard() {
     try {
       const token = localStorage.getItem("token");
       await axios.post(
-        "http://localhost:5000/api/transfers/log",
+        "https://presana-backend.onrender.com/api/transfers/log",
         {
           receiver: receiverId,
           fileName: file.name,

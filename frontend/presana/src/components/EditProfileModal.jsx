@@ -22,7 +22,7 @@ export default function EditProfileModal({ isOpen, onClose, user, onUpdate }) {
     try {
       const token = localStorage.getItem("token");
       const response = await axios.put(
-        "http://localhost:5000/api/auth/profile",
+        "https://presana-backend.onrender.com/api/auth/profile",
         form,
         {
           headers: { Authorization: `Bearer ${token}` },

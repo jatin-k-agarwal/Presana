@@ -27,14 +27,14 @@ export default function Register() {
     }
 
     try {
-      await axios.post("http://localhost:5000/api/auth/register", {
+      await axios.post(`${API_URL}/api/auth/register`, {
         name: form.name,
         email: form.email,
         password: form.password
       });
       
       // Registration successful, now login automatically
-      const loginResponse = await axios.post("http://localhost:5000/api/auth/login", {
+      const loginResponse = await axios.post(`${API_URL}/api/auth/login`, {
         email: form.email,
         password: form.password
       });
