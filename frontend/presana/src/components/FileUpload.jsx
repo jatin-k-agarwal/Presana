@@ -39,34 +39,34 @@ export default function FileUpload({ selectedFiles, onFilesSelect, selectedUser,
   };
 
   return (
-    <div className={`rounded-3xl shadow-lg p-6 transition-colors ${isDark ? 'bg-gray-800' : 'bg-white'}`}>
-      <h2 className={`text-xl font-semibold mb-4 flex items-center gap-2 ${isDark ? 'text-gray-100' : 'text-gray-800'}`}>
-        <span className="text-2xl">📤</span>
-        Send Files
+    <div className={`rounded-2xl sm:rounded-3xl shadow-lg p-4 sm:p-6 transition-colors ${isDark ? 'bg-gray-800' : 'bg-white'}`}>
+      <h2 className={`text-lg sm:text-xl font-semibold mb-3 sm:mb-4 flex items-center gap-2 ${isDark ? 'text-gray-100' : 'text-gray-800'}`}>
+        <span className="text-xl sm:text-2xl">📤</span>
+        <span className="text-base sm:text-xl">Send Files</span>
       </h2>
 
-      {/* Selected User Info */}
+      {/* Selected User Info - Mobile Optimized */}
       {selectedUser ? (
-        <div className={`border-2 rounded-xl p-3 mb-4 ${isDark ? 'bg-indigo-900/30 border-indigo-700' : 'bg-indigo-50 border-indigo-200'}`}>
-          <p className={`text-sm ${isDark ? 'text-indigo-300' : 'text-indigo-600'}`}>
+        <div className={`border-2 rounded-xl p-3 mb-3 sm:mb-4 ${isDark ? 'bg-indigo-900/30 border-indigo-700' : 'bg-indigo-50 border-indigo-200'}`}>
+          <p className={`text-xs sm:text-sm ${isDark ? 'text-indigo-300' : 'text-indigo-600'}`}>
             📍 Sending to: <span className="font-semibold">User {selectedUser.substring(0, 8)}...</span>
           </p>
         </div>
       ) : (
-        <div className={`border-2 rounded-xl p-3 mb-4 ${isDark ? 'bg-yellow-900/20 border-yellow-700' : 'bg-yellow-50 border-yellow-200'}`}>
-          <p className={`text-sm ${isDark ? 'text-yellow-300' : 'text-yellow-700'}`}>
+        <div className={`border-2 rounded-xl p-3 mb-3 sm:mb-4 ${isDark ? 'bg-yellow-900/20 border-yellow-700' : 'bg-yellow-50 border-yellow-200'}`}>
+          <p className={`text-xs sm:text-sm ${isDark ? 'text-yellow-300' : 'text-yellow-700'}`}>
             ⚠️ Please select a user from the left to send files
           </p>
         </div>
       )}
 
-      {/* File Drop Zone */}
+      {/* File Drop Zone - Mobile Optimized with Larger Touch Area */}
       <div
         onClick={() => !isSending && fileInputRef.current?.click()}
         onDrop={handleDrop}
         onDragOver={handleDragOver}
-        className={`border-4 border-dashed rounded-3xl p-8 text-center transition-all
-          ${isSending ? 'cursor-not-allowed opacity-50' : isDark ? 'border-gray-600 hover:border-indigo-500 hover:bg-gray-700/50 cursor-pointer' : 'border-gray-300 hover:border-indigo-500 hover:bg-indigo-50 cursor-pointer'}`}
+        className={`border-4 border-dashed rounded-2xl sm:rounded-3xl p-8 sm:p-10 md:p-12 text-center transition-all min-h-[180px] sm:min-h-[200px]
+          ${isSending ? 'cursor-not-allowed opacity-50' : isDark ? 'border-gray-600 hover:border-indigo-500 hover:bg-gray-700/50 cursor-pointer active:bg-gray-700' : 'border-gray-300 hover:border-indigo-500 hover:bg-indigo-50 cursor-pointer active:bg-indigo-100'}`}
       >
         <input
           ref={fileInputRef}
@@ -77,23 +77,26 @@ export default function FileUpload({ selectedFiles, onFilesSelect, selectedUser,
           disabled={isSending}
         />
 
-        <div className="text-6xl mb-3">📦</div>
-        <p className={`text-lg font-semibold ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
+        <div className="text-5xl sm:text-6xl mb-3">📦</div>
+        <p className={`text-base sm:text-lg font-semibold ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
           Drop your files here
         </p>
         <p className={`text-sm mt-2 ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
-          or click to browse (multiple files supported)
+          or tap to browse
+        </p>
+        <p className={`text-xs sm:text-sm mt-1 ${isDark ? 'text-gray-500' : 'text-gray-400'}`}>
+          (multiple files supported)
         </p>
       </div>
 
-      {/* Selected Files List */}
+      {/* Selected Files List - Mobile Optimized */}
       {selectedFiles.length > 0 && (
-        <div className="mt-4 space-y-2">
+        <div className="mt-3 sm:mt-4 space-y-2">
           <div className="flex items-center justify-between mb-2">
             <p className={`text-sm font-semibold ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
               Selected Files ({selectedFiles.length})
             </p>
-            <p className={`text-sm ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
+            <p className={`text-xs sm:text-sm ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
               Total: {formatFileSize(getTotalSize())}
             </p>
           </div>
@@ -101,12 +104,12 @@ export default function FileUpload({ selectedFiles, onFilesSelect, selectedUser,
             {selectedFiles.map((file, index) => (
               <div
                 key={index}
-                className={`flex items-center justify-between border-2 rounded-xl p-3 ${isDark ? 'bg-gray-700 border-gray-600' : 'bg-gray-50 border-gray-200'}`}
+                className={`flex items-center justify-between border-2 rounded-xl p-3 sm:p-3 min-h-[60px] sm:min-h-[auto] ${isDark ? 'bg-gray-700 border-gray-600' : 'bg-gray-50 border-gray-200'}`}
               >
                 <div className="flex items-center gap-3 flex-1 min-w-0">
-                  <span className="text-2xl">📄</span>
+                  <span className="text-2xl sm:text-2xl">📄</span>
                   <div className="flex-1 min-w-0">
-                    <p className={`font-medium truncate ${isDark ? 'text-gray-200' : 'text-gray-800'}`}>{file.name}</p>
+                    <p className={`font-medium truncate text-sm sm:text-base ${isDark ? 'text-gray-200' : 'text-gray-800'}`}>{file.name}</p>
                     <p className={`text-xs ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>{formatFileSize(file.size)}</p>
                   </div>
                 </div>
@@ -116,7 +119,8 @@ export default function FileUpload({ selectedFiles, onFilesSelect, selectedUser,
                       e.stopPropagation();
                       removeFile(index);
                     }}
-                    className="text-red-500 hover:text-red-700 text-sm ml-2 px-2"
+                    className="text-red-500 hover:text-red-700 text-base sm:text-sm ml-2 p-2 min-w-[44px] min-h-[44px] flex items-center justify-center"
+                    aria-label="Remove file"
                   >
                     ✖
                   </button>
@@ -130,16 +134,17 @@ export default function FileUpload({ selectedFiles, onFilesSelect, selectedUser,
       {/* Progress Bar */}
       {isSending && <ProgressBar progress={progress} />}
 
-      {/* Send Button */}
+      {/* Send Button - Mobile Optimized with Larger Touch Target */}
       <button
         onClick={onSend}
         disabled={!selectedUser || selectedFiles.length === 0 || isSending}
-        className={`w-full mt-6 py-4 rounded-xl font-semibold text-lg transition-all
+        className={`w-full mt-4 sm:mt-6 py-4 sm:py-4 rounded-xl font-semibold text-base sm:text-lg transition-all min-h-[56px] sm:min-h-[auto]
           ${
             selectedUser && selectedFiles.length > 0 && !isSending
-              ? "bg-indigo-600 hover:bg-indigo-700 text-white cursor-pointer"
+              ? "bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 text-white cursor-pointer"
               : isDark ? "bg-gray-700 text-gray-500 cursor-not-allowed" : "bg-gray-300 text-gray-500 cursor-not-allowed"
           }`}
+        aria-label={isSending ? "Sending files" : selectedUser && selectedFiles.length > 0 ? `Send ${selectedFiles.length} file${selectedFiles.length > 1 ? 's' : ''}` : "Select user and files to send"}
       >
         {isSending 
           ? "🔄 Sending..." 
@@ -148,9 +153,9 @@ export default function FileUpload({ selectedFiles, onFilesSelect, selectedUser,
             : "Select User & Files to Send"}
       </button>
 
-      {/* Info */}
-      <div className={`mt-6 border-2 rounded-xl p-4 ${isDark ? 'bg-blue-900/20 border-blue-700' : 'bg-blue-50 border-blue-200'}`}>
-        <p className={`text-sm ${isDark ? 'text-blue-300' : 'text-blue-700'}`}>
+      {/* Info - Mobile Optimized */}
+      <div className={`mt-4 sm:mt-6 border-2 rounded-xl p-3 sm:p-4 ${isDark ? 'bg-blue-900/20 border-blue-700' : 'bg-blue-50 border-blue-200'}`}>
+        <p className={`text-xs sm:text-sm leading-relaxed ${isDark ? 'text-blue-300' : 'text-blue-700'}`}>
           💡 <span className="font-semibold">Tip:</span> You can select multiple files at once! Large files are sent in chunks (512KB) with real-time progress tracking.
         </p>
       </div>

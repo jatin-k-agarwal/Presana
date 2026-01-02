@@ -9,6 +9,7 @@ import OnlineUsers from "../components/OnlineUsers";
 import FileUpload from "../components/FileUpload";
 import FileReceiver from "../components/FileReceiver";
 import HowToUse from "../components/HowToUse";
+import Footer from "../components/Footer";
 
 const CHUNK_SIZE = 512 * 1024; // 512KB chunks for faster transfer
 
@@ -200,64 +201,67 @@ export default function Dashboard() {
 
       {/* Main Content */}
       <div className="flex-1" onClick={() => sidebarOpen && setSidebarOpen(false)}>
-        {/* Header */}
-        <header className={`shadow px-6 py-4 flex items-center justify-between transition-colors ${isDark ? 'bg-gray-800' : 'bg-white'}`}>
-          <div className="flex items-center gap-4">
+        {/* Header - Mobile Friendly Single Row */}
+        <header className={`shadow px-3 sm:px-6 py-2.5 sm:py-4 flex items-center justify-between gap-2 sm:gap-4 transition-colors ${isDark ? 'bg-gray-800' : 'bg-white'}`}>
+          <div className="flex items-center gap-2 sm:gap-4">
             <button
               onClick={(e) => {
-                e.stopPropagation(); // Prevent closing sidebar when opening it
+                e.stopPropagation();
                 setSidebarOpen(true);
               }}
-              className="text-2xl hover:text-indigo-600"
+              className="text-xl sm:text-3xl p-1.5 sm:p-2 hover:text-indigo-600 min-w-[40px] min-h-[40px] sm:min-w-[44px] sm:min-h-[44px] flex items-center justify-center"
+              aria-label="Open menu"
             >
               ☰
             </button>
 
-            <div>
-              <h1 className={`text-2xl font-bold ${isDark ? 'text-gray-100' : 'text-gray-800'}`}>Prēṣaṇa</h1>
-              <p className={`text-sm ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
-                Fast • Secure • Real-Time File Transfer
+            <div className="flex-1 min-w-0">
+              <h1 className={`text-base sm:text-2xl font-bold truncate ${isDark ? 'text-gray-100' : 'text-gray-800'}`}>Prēṣaṇa</h1>
+              <p className={`text-[10px] sm:text-sm hidden xs:block ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
+                Fast • Secure
               </p>
             </div>
           </div>
 
-          {/* Action Buttons */}
-          <div className="flex items-center gap-3">
-            {/* Theme Toggle Button */}
+          {/* Action Buttons - Compact for Mobile */}
+          <div className="flex items-center gap-1.5 sm:gap-3">
+            {/* Theme Toggle Button - Mobile Optimized */}
             <button
               onClick={(e) => {
                 e.stopPropagation();
                 toggleTheme();
               }}
-              className={`p-2 rounded-xl font-semibold transition-all ${isDark ? 'bg-gray-700 hover:bg-gray-600 text-yellow-400' : 'bg-gray-100 hover:bg-gray-200 text-gray-700'}`}
+              className={`p-2 sm:p-2 rounded-lg sm:rounded-xl transition-all min-w-[40px] min-h-[40px] sm:min-w-[44px] sm:min-h-[44px] flex items-center justify-center ${isDark ? 'bg-gray-700 hover:bg-gray-600 text-yellow-400' : 'bg-gray-100 hover:bg-gray-200 text-gray-700'}`}
               title={isDark ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
+              aria-label={isDark ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
             >
-              <span className="text-2xl">{isDark ? '☀️' : '🌙'}</span>
+              <span className="text-xl sm:text-2xl">{isDark ? '☀️' : '🌙'}</span>
             </button>
 
-            {/* Guide Toggle Button */}
+            {/* Guide Toggle Button - Mobile Optimized */}
             <button
               onClick={(e) => {
                 e.stopPropagation();
                 setShowGuide(!showGuide);
               }}
-              className={`flex items-center gap-2 px-4 py-2 rounded-xl font-semibold transition-all ${
+              className={`flex items-center justify-center gap-1.5 sm:gap-2 px-2 sm:px-4 py-2 sm:py-2 rounded-lg sm:rounded-xl font-semibold transition-all min-w-[40px] min-h-[40px] sm:min-h-[44px] ${
                 showGuide
                   ? "bg-indigo-600 text-white"
                   : isDark ? "bg-gray-700 text-gray-300 hover:bg-gray-600" : "bg-gray-100 text-gray-700 hover:bg-gray-200"
               }`}
+              aria-label={showGuide ? "Hide Guide" : "How to Use"}
             >
-              <span className="text-lg">{showGuide ? "📖" : "❓"}</span>
-              <span className="hidden sm:inline">
+              <span className="text-xl sm:text-lg">{showGuide ? "📖" : "❓"}</span>
+              <span className="hidden sm:inline text-sm sm:text-base">
                 {showGuide ? "Hide Guide" : "How to Use"}
               </span>
             </button>
           </div>
         </header>
 
-        {/* Content Area */}
-        <main className="p-6 space-y-6">
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Content Area - Mobile Optimized */}
+        <main className="p-3 sm:p-4 md:p-6 space-y-4 sm:space-y-6">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
             {/* Left: Online Users */}
             <div className="lg:col-span-1">
               <OnlineUsers
@@ -287,6 +291,9 @@ export default function Dashboard() {
             </div>
           )}
         </main>
+
+        {/* Footer */}
+        <Footer />
       </div>
     </div>
   );
