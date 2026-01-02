@@ -24,8 +24,8 @@ export default function FileReceiver({ socket }) {
     socket.on("file-complete", () => {
       console.log("✅ File transfer complete");
       
-      // Reconstruct file from chunks
-      const blob = new Blob(chunks);
+      // Reconstruct file from chunks WITH CORRECT MIME TYPE to preserve format
+      const blob = new Blob(chunks, { type: fileMeta.type });
       const url = URL.createObjectURL(blob);
 
       // Auto-download

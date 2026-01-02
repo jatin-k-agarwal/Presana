@@ -1,13 +1,17 @@
+import { useTheme } from "../context/ThemeContext";
+
 export default function OnlineUsers({ users, selectedUser, onSelectUser }) {
+  const { isDark } = useTheme();
+  
   return (
-    <div className="bg-white rounded-3xl shadow-lg p-6">
-      <h2 className="text-xl font-semibold mb-4 flex items-center gap-2">
+    <div className={`rounded-3xl shadow-lg p-6 transition-colors ${isDark ? 'bg-gray-800' : 'bg-white'}`}>
+      <h2 className={`text-xl font-semibold mb-4 flex items-center gap-2 ${isDark ? 'text-gray-100' : 'text-gray-800'}`}>
         <span className="text-2xl">👥</span>
         Online Users ({users.length})
       </h2>
 
       {users.length === 0 ? (
-        <div className="text-center py-8 text-gray-400">
+        <div className={`text-center py-8 ${isDark ? 'text-gray-500' : 'text-gray-400'}`}>
           <p className="text-4xl mb-2">😔</p>
           <p>No users online</p>
           <p className="text-sm mt-1">Waiting for others to join...</p>
@@ -28,7 +32,7 @@ export default function OnlineUsers({ users, selectedUser, onSelectUser }) {
                   ${
                     selectedUser === userId
                       ? "bg-indigo-600 text-white shadow-lg"
-                      : "bg-gray-100 hover:bg-gray-200 text-gray-800"
+                      : isDark ? "bg-gray-700 hover:bg-gray-600 text-gray-200" : "bg-gray-100 hover:bg-gray-200 text-gray-800"
                   }`}
               >
                 <div className="flex items-center gap-3">

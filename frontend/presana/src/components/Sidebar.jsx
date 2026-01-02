@@ -32,6 +32,14 @@ export default function Sidebar({ isOpen, onClose, user, logout, onUserUpdate, c
         onUpdate={onUserUpdate}
       />
 
+      {/* Backdrop Overlay */}
+      {isOpen && (
+        <div
+          className="fixed inset-0 bg-black bg-opacity-50 z-40 transition-opacity duration-300"
+          onClick={onClose}
+        />
+      )}
+
       {/* Sidebar */}
       <div
         className={`fixed top-0 left-0 h-full w-72 bg-gray-900 text-white
@@ -72,7 +80,10 @@ export default function Sidebar({ isOpen, onClose, user, logout, onUserUpdate, c
           </div>
 
           <button
-            onClick={() => setIsEditModalOpen(true)}
+            onClick={() => {
+              setIsEditModalOpen(true);
+              onClose(); // Close sidebar when opening edit profile
+            }}
             className="mt-4 text-sm text-indigo-400 hover:underline"
           >
             Edit Profile

@@ -3,22 +3,26 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { io } from "socket.io-client";
 import axios from "axios";
 import { useToast } from "../context/ToastContext";
+import { useTheme } from "../context/ThemeContext";
 import Sidebar from "../components/Sidebar";
 import OnlineUsers from "../components/OnlineUsers";
 import FileUpload from "../components/FileUpload";
 import FileReceiver from "../components/FileReceiver";
+import HowToUse from "../components/HowToUse";
 
-const CHUNK_SIZE = 64 * 1024; // 64KB chunks
+const CHUNK_SIZE = 512 * 1024; // 512KB chunks for faster transfer
 
 export default function Dashboard() {
   const navigate = useNavigate();
   const location = useLocation();
   const { showToast } = useToast();
+  const { theme, toggleTheme, isDark } = useTheme();
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [showGuide, setShowGuide] = useState(false);
   const [socket, setSocket] = useState(null);
   const [onlineUsers, setOnlineUsers] = useState([]);
   const [selectedUser, setSelectedUser] = useState(null);
-  const [selectedFile, setSelectedFile] = useState(null);
+  const [selectedFiles, setSelectedFiles] = useState([]);
   const [progress, setProgress] = useState(0);
   const [isSending, setIsSending] = useState(false);
   const [user, setUser] = useState(JSON.parse(localStorage.getItem("user") || "{}"));
@@ -106,8 +110,8 @@ export default function Dashboard() {
   };
 
   const handleSendFile = async () => {
-    if (!selectedUser || !selectedFile || !socket) {
-      showToast("Please select a user and file first!", "error");
+    if (!selectedUser || selectedFiles.length === 0 || !socket) {
+      showToast("Please select a user and files first!", "error");
       return;
     }
 
@@ -115,58 +119,72 @@ export default function Dashboard() {
     setProgress(0);
 
     try {
-      // Send file metadata first
-      socket.emit("file-meta", {
-        to: selectedUser,
-        meta: {
-          name: selectedFile.name,
-          size: selectedFile.size,
-          type: selectedFile.type,
-        },
-      });
+      const totalFiles = selectedFiles.length;
+      let filesCompleted = 0;
 
-      // Read and send file in chunks
-      let offset = 0;
-
-      while (offset < selectedFile.size) {
-        const chunk = selectedFile.slice(offset, offset + CHUNK_SIZE);
-        const buffer = await chunk.arrayBuffer();
-
-        socket.emit("file-chunk", {
+      for (const file of selectedFiles) {
+        // Send file metadata first
+        socket.emit("file-meta", {
           to: selectedUser,
-          chunk: buffer,
+          meta: {
+            name: file.name,
+            size: file.size,
+            type: file.type,
+          },
         });
 
-        offset += CHUNK_SIZE;
-        const progressPercent = Math.min(
-          Math.round((offset / selectedFile.size) * 100),
-          100
-        );
-        setProgress(progressPercent);
+        // Read and send file in chunks
+        let offset = 0;
 
-        // Small delay to prevent overwhelming the socket
-        await new Promise((resolve) => setTimeout(resolve, 10));
+        while (offset < file.size) {
+          const chunk = file.slice(offset, offset + CHUNK_SIZE);
+          const buffer = await chunk.arrayBuffer();
+
+          socket.emit("file-chunk", {
+            to: selectedUser,
+            chunk: buffer,
+          });
+
+          offset += CHUNK_SIZE;
+          
+          // Calculate overall progress across all files
+          const fileProgress = offset / file.size;
+          const overallProgress = ((filesCompleted + fileProgress) / totalFiles) * 100;
+          setProgress(Math.min(Math.round(overallProgress), 100));
+
+          // Minimal delay only for progress UI updates (removed 10ms delay for speed)
+          if (offset < file.size) {
+            await new Promise((resolve) => setTimeout(resolve, 1));
+          }
+        }
+
+        // Notify transfer complete for this file
+        socket.emit("file-complete", { to: selectedUser });
+
+        // Log transfer to database
+        await logTransfer(selectedUser, file);
+
+        filesCompleted++;
+        
+        // Minimal delay between files (reduced from 100ms to 50ms)
+        if (filesCompleted < totalFiles) {
+          await new Promise((resolve) => setTimeout(resolve, 50));
+        }
       }
 
-      // Notify transfer complete
-      socket.emit("file-complete", { to: selectedUser });
-
-      // Log transfer to database
-      await logTransfer(selectedUser, selectedFile);
-
-      showToast(`File "${selectedFile.name}" sent successfully!`, "success");
-      setSelectedFile(null);
+      showToast(`${totalFiles} file${totalFiles > 1 ? 's' : ''} sent successfully!`, "success");
+      setSelectedFiles([]);
       setProgress(0);
     } catch (error) {
       console.error("File send error:", error);
-      showToast("Failed to send file. Please try again.", "error");
+      showToast("Failed to send files. Please try again.", "error");
     } finally {
       setIsSending(false);
     }
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 flex overflow-hidden">
+    <div className={`min-h-screen flex overflow-hidden transition-colors ${isDark ? 'bg-gray-900' : 'bg-gray-100'}`}>
       {/* File Receiver - Hidden component listening for incoming files */}
       <FileReceiver socket={socket} />
 
@@ -181,26 +199,64 @@ export default function Dashboard() {
       />
 
       {/* Main Content */}
-      <div className="flex-1">
+      <div className="flex-1" onClick={() => sidebarOpen && setSidebarOpen(false)}>
         {/* Header */}
-        <header className="bg-white shadow px-6 py-4 flex items-center gap-4">
-          <button
-            onClick={() => setSidebarOpen(true)}
-            className="text-2xl hover:text-indigo-600"
-          >
-            ☰
-          </button>
+        <header className={`shadow px-6 py-4 flex items-center justify-between transition-colors ${isDark ? 'bg-gray-800' : 'bg-white'}`}>
+          <div className="flex items-center gap-4">
+            <button
+              onClick={(e) => {
+                e.stopPropagation(); // Prevent closing sidebar when opening it
+                setSidebarOpen(true);
+              }}
+              className="text-2xl hover:text-indigo-600"
+            >
+              ☰
+            </button>
 
-          <div>
-            <h1 className="text-2xl font-bold text-gray-800">Prēṣaṇa</h1>
-            <p className="text-sm text-gray-500">
-              Fast • Secure • Real-Time File Transfer
-            </p>
+            <div>
+              <h1 className={`text-2xl font-bold ${isDark ? 'text-gray-100' : 'text-gray-800'}`}>Prēṣaṇa</h1>
+              <p className={`text-sm ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
+                Fast • Secure • Real-Time File Transfer
+              </p>
+            </div>
+          </div>
+
+          {/* Action Buttons */}
+          <div className="flex items-center gap-3">
+            {/* Theme Toggle Button */}
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                toggleTheme();
+              }}
+              className={`p-2 rounded-xl font-semibold transition-all ${isDark ? 'bg-gray-700 hover:bg-gray-600 text-yellow-400' : 'bg-gray-100 hover:bg-gray-200 text-gray-700'}`}
+              title={isDark ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
+            >
+              <span className="text-2xl">{isDark ? '☀️' : '🌙'}</span>
+            </button>
+
+            {/* Guide Toggle Button */}
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                setShowGuide(!showGuide);
+              }}
+              className={`flex items-center gap-2 px-4 py-2 rounded-xl font-semibold transition-all ${
+                showGuide
+                  ? "bg-indigo-600 text-white"
+                  : isDark ? "bg-gray-700 text-gray-300 hover:bg-gray-600" : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+              }`}
+            >
+              <span className="text-lg">{showGuide ? "📖" : "❓"}</span>
+              <span className="hidden sm:inline">
+                {showGuide ? "Hide Guide" : "How to Use"}
+              </span>
+            </button>
           </div>
         </header>
 
         {/* Content Area */}
-        <main className="p-6">
+        <main className="p-6 space-y-6">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             {/* Left: Online Users */}
             <div className="lg:col-span-1">
@@ -214,8 +270,8 @@ export default function Dashboard() {
             {/* Right: File Upload */}
             <div className="lg:col-span-2">
               <FileUpload
-                selectedFile={selectedFile}
-                onFileSelect={setSelectedFile}
+                selectedFiles={selectedFiles}
+                onFilesSelect={setSelectedFiles}
                 selectedUser={selectedUser}
                 onSend={handleSendFile}
                 progress={progress}
@@ -223,6 +279,13 @@ export default function Dashboard() {
               />
             </div>
           </div>
+
+          {/* How to Use Guide Section - Below Main Content */}
+          {showGuide && (
+            <div className="animate-fadeIn">
+              <HowToUse />
+            </div>
+          )}
         </main>
       </div>
     </div>
