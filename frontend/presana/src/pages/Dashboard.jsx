@@ -124,13 +124,18 @@ export default function Dashboard() {
       let filesCompleted = 0;
 
       for (const file of selectedFiles) {
-        // Send file metadata first
+        // Send file metadata WITH SENDER INFORMATION first
         socket.emit("file-meta", {
           to: selectedUser,
           meta: {
             name: file.name,
             size: file.size,
             type: file.type,
+            sender: {
+              name: user.name,
+              userId: user.userId,
+              _id: user._id,
+            },
           },
         });
 
